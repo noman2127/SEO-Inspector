@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "SEO Meta Tag Analyzer"
+version = "1.0.0"
+id = "artifacts/seo-analyzer"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18799
+
+[services.development]
+run = "pnpm --filter @workspace/seo-analyzer run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/seo-analyzer", "run", "build" ]
+publicDir = "artifacts/seo-analyzer/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18799"
+BASE_PATH = "/"

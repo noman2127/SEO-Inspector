@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: seo
+    description: SEO analysis operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,38 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /seo/analyze:
+    post:
+      operationId: analyzeSeo
+      tags: [seo]
+      summary: Analyze SEO meta tags for a URL
+      description: Fetches HTML from a given URL and extracts all SEO-relevant meta tags, then evaluates them against best practices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyzeSeoBody"
+      responses:
+        "200":
+          description: SEO analysis result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SeoAnalysisResult"
+        "400":
+          description: Bad request (invalid URL)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Could not fetch or parse the page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +68,144 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: string
+      required:
+        - error
+
+    AnalyzeSeoBody:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The URL to analyze
+      required:
+        - url
+
+    SeoTag:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Tag identifier/name
+        label:
+          type: string
+          description: Human-readable label
+        value:
+          type: string
+          nullable: true
+          description: The tag value found on the page
+        status:
+          type: string
+          enum: [pass, warn, fail, info]
+          description: Evaluation result
+        feedback:
+          type: string
+          description: Explanation of status and recommendation
+        category:
+          type: string
+          enum: [general, open-graph, twitter, technical, structured-data]
+          description: Tag category
+      required:
+        - name
+        - label
+        - status
+        - feedback
+        - category
+
+    SeoScore:
+      type: object
+      properties:
+        overall:
+          type: number
+          description: Overall score 0-100
+        general:
+          type: number
+          description: General SEO score 0-100
+        openGraph:
+          type: number
+          description: Open Graph score 0-100
+        twitter:
+          type: number
+          description: Twitter card score 0-100
+        technical:
+          type: number
+          description: Technical SEO score 0-100
+      required:
+        - overall
+        - general
+        - openGraph
+        - twitter
+        - technical
+
+    GooglePreview:
+      type: object
+      properties:
+        title:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        url:
+          type: string
+      required:
+        - url
+
+    SocialPreview:
+      type: object
+      properties:
+        title:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        image:
+          type: string
+          nullable: true
+        siteName:
+          type: string
+          nullable: true
+        cardType:
+          type: string
+          nullable: true
+      required: []
+
+    SeoAnalysisResult:
+      type: object
+      properties:
+        url:
+          type: string
+        fetchedAt:
+          type: string
+          description: ISO timestamp when the URL was fetched
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/SeoTag"
+        score:
+          $ref: "#/components/schemas/SeoScore"
+        googlePreview:
+          $ref: "#/components/schemas/GooglePreview"
+        facebookPreview:
+          $ref: "#/components/schemas/SocialPreview"
+        twitterPreview:
+          $ref: "#/components/schemas/SocialPreview"
+        rawTagCount:
+          type: integer
+          description: Total number of meta tags found
+      required:
+        - url
+        - fetchedAt
+        - tags
+        - score
+        - googlePreview
+        - facebookPreview
+        - twitterPreview
+        - rawTagCount

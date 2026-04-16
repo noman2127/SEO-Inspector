@@ -5,18 +5,26 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
+  MutationFunction,
   QueryFunction,
   QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { HealthStatus } from "./api.schemas";
+import type {
+  AnalyzeSeoBody,
+  ErrorResponse,
+  HealthStatus,
+  SeoAnalysisResult,
+} from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
-import type { ErrorType } from "../custom-fetch";
+import type { ErrorType, BodyType } from "../custom-fetch";
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
@@ -99,3 +107,90 @@ export function useHealthCheck<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * Fetches HTML from a given URL and extracts all SEO-relevant meta tags, then evaluates them against best practices
+ * @summary Analyze SEO meta tags for a URL
+ */
+export const getAnalyzeSeoUrl = () => {
+  return `/api/seo/analyze`;
+};
+
+export const analyzeSeo = async (
+  analyzeSeoBody: AnalyzeSeoBody,
+  options?: RequestInit,
+): Promise<SeoAnalysisResult> => {
+  return customFetch<SeoAnalysisResult>(getAnalyzeSeoUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(analyzeSeoBody),
+  });
+};
+
+export const getAnalyzeSeoMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof analyzeSeo>>,
+    TError,
+    { data: BodyType<AnalyzeSeoBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof analyzeSeo>>,
+  TError,
+  { data: BodyType<AnalyzeSeoBody> },
+  TContext
+> => {
+  const mutationKey = ["analyzeSeo"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof analyzeSeo>>,
+    { data: BodyType<AnalyzeSeoBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return analyzeSeo(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AnalyzeSeoMutationResult = NonNullable<
+  Awaited<ReturnType<typeof analyzeSeo>>
+>;
+export type AnalyzeSeoMutationBody = BodyType<AnalyzeSeoBody>;
+export type AnalyzeSeoMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Analyze SEO meta tags for a URL
+ */
+export const useAnalyzeSeo = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof analyzeSeo>>,
+    TError,
+    { data: BodyType<AnalyzeSeoBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof analyzeSeo>>,
+  TError,
+  { data: BodyType<AnalyzeSeoBody> },
+  TContext
+> => {
+  return useMutation(getAnalyzeSeoMutationOptions(options));
+};

@@ -8,3 +8,94 @@
 export interface HealthStatus {
   status: string;
 }
+
+export interface ErrorResponse {
+  error: string;
+  details?: string;
+}
+
+export interface AnalyzeSeoBody {
+  /** The URL to analyze */
+  url: string;
+}
+
+/**
+ * Evaluation result
+ */
+export type SeoTagStatus = (typeof SeoTagStatus)[keyof typeof SeoTagStatus];
+
+export const SeoTagStatus = {
+  pass: "pass",
+  warn: "warn",
+  fail: "fail",
+  info: "info",
+} as const;
+
+/**
+ * Tag category
+ */
+export type SeoTagCategory =
+  (typeof SeoTagCategory)[keyof typeof SeoTagCategory];
+
+export const SeoTagCategory = {
+  general: "general",
+  "open-graph": "open-graph",
+  twitter: "twitter",
+  technical: "technical",
+  "structured-data": "structured-data",
+} as const;
+
+export interface SeoTag {
+  /** Tag identifier/name */
+  name: string;
+  /** Human-readable label */
+  label: string;
+  /** The tag value found on the page */
+  value?: string | null;
+  /** Evaluation result */
+  status: SeoTagStatus;
+  /** Explanation of status and recommendation */
+  feedback: string;
+  /** Tag category */
+  category: SeoTagCategory;
+}
+
+export interface SeoScore {
+  /** Overall score 0-100 */
+  overall: number;
+  /** General SEO score 0-100 */
+  general: number;
+  /** Open Graph score 0-100 */
+  openGraph: number;
+  /** Twitter card score 0-100 */
+  twitter: number;
+  /** Technical SEO score 0-100 */
+  technical: number;
+}
+
+export interface GooglePreview {
+  title?: string | null;
+  description?: string | null;
+  url: string;
+}
+
+export interface SocialPreview {
+  title?: string | null;
+  description?: string | null;
+  image?: string | null;
+  siteName?: string | null;
+  cardType?: string | null;
+}
+
+export interface SeoAnalysisResult {
+  url: string;
+  /** ISO timestamp when the URL was fetched */
+  fetchedAt: string;
+  tags: SeoTag[];
+  score: SeoScore;
+  googlePreview: GooglePreview;
+  facebookPreview: SocialPreview;
+  twitterPreview: SocialPreview;
+  /** Total number of meta tags found */
+  rawTagCount: number;
+}

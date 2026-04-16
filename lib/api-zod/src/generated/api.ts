@@ -14,3 +14,65 @@ import * as zod from "zod";
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * Fetches HTML from a given URL and extracts all SEO-relevant meta tags, then evaluates them against best practices
+ * @summary Analyze SEO meta tags for a URL
+ */
+export const AnalyzeSeoBody = zod.object({
+  url: zod.string().describe("The URL to analyze"),
+});
+
+export const AnalyzeSeoResponse = zod.object({
+  url: zod.string(),
+  fetchedAt: zod.string().describe("ISO timestamp when the URL was fetched"),
+  tags: zod.array(
+    zod.object({
+      name: zod.string().describe("Tag identifier\/name"),
+      label: zod.string().describe("Human-readable label"),
+      value: zod.string().nullish().describe("The tag value found on the page"),
+      status: zod
+        .enum(["pass", "warn", "fail", "info"])
+        .describe("Evaluation result"),
+      feedback: zod
+        .string()
+        .describe("Explanation of status and recommendation"),
+      category: zod
+        .enum([
+          "general",
+          "open-graph",
+          "twitter",
+          "technical",
+          "structured-data",
+        ])
+        .describe("Tag category"),
+    }),
+  ),
+  score: zod.object({
+    overall: zod.number().describe("Overall score 0-100"),
+    general: zod.number().describe("General SEO score 0-100"),
+    openGraph: zod.number().describe("Open Graph score 0-100"),
+    twitter: zod.number().describe("Twitter card score 0-100"),
+    technical: zod.number().describe("Technical SEO score 0-100"),
+  }),
+  googlePreview: zod.object({
+    title: zod.string().nullish(),
+    description: zod.string().nullish(),
+    url: zod.string(),
+  }),
+  facebookPreview: zod.object({
+    title: zod.string().nullish(),
+    description: zod.string().nullish(),
+    image: zod.string().nullish(),
+    siteName: zod.string().nullish(),
+    cardType: zod.string().nullish(),
+  }),
+  twitterPreview: zod.object({
+    title: zod.string().nullish(),
+    description: zod.string().nullish(),
+    image: zod.string().nullish(),
+    siteName: zod.string().nullish(),
+    cardType: zod.string().nullish(),
+  }),
+  rawTagCount: zod.number().describe("Total number of meta tags found"),
+});
