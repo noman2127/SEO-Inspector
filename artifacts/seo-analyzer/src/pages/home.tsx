@@ -99,17 +99,16 @@ const CATEGORIES = [
 
 /* ─── Main component ─── */
 export default function Home() {
-  const [url, setUrl] = useState("");
+  const [domain, setDomain] = useState("");
   const { mutate: analyze, data, isPending } = useAnalyzeSeo();
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url.trim()) return;
-    const raw = url.trim();
-    const targeted = raw.startsWith("http") ? raw : `https://${raw}`;
+    if (!domain.trim()) return;
+    const targeted = `https://${domain.trim()}`;
     try { new URL(targeted); } catch {
-      toast({ title: "Invalid URL", description: "Please enter a valid website URL.", variant: "destructive" });
+      toast({ title: "Invalid URL", description: "Please enter a valid website address.", variant: "destructive" });
       return;
     }
     analyze({ data: { url: targeted } }, {
@@ -141,21 +140,27 @@ export default function Home() {
               <span className="text-base font-bold tracking-tight">SEO Analyzer</span>
             </div>
             <form onSubmit={handleSubmit} className="flex w-full flex-1 gap-2">
-              <div className="relative flex-1 min-w-0">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+              <div className="relative flex-1 min-w-0 flex items-center">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none select-none">
+                  <Search className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-mono text-sm text-muted-foreground">https://</span>
+                </div>
                 <Input
-                  type="url"
-                  placeholder="https://example.com"
-                  className="pl-9 h-10 font-mono text-sm w-full"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
+                  type="text"
+                  placeholder="example.com"
+                  className="pl-[5.5rem] h-10 font-mono text-sm w-full"
+                  value={domain}
+                  onChange={(e) => setDomain(e.target.value)}
                   disabled={isPending}
                   autoComplete="url"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
                 />
               </div>
               <Button
                 type="submit"
-                disabled={isPending || !url.trim()}
+                disabled={isPending || !domain.trim()}
                 className="h-10 shrink-0 px-4 sm:px-6 bg-gradient-to-r from-blue-500 to-violet-600 hover:from-blue-600 hover:to-violet-700 border-0 shadow-sm"
               >
                 {isPending ? (
