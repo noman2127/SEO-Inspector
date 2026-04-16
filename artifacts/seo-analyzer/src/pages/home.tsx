@@ -14,6 +14,8 @@ import {
   ChevronRight,
   ListChecks,
   XCircle,
+  Zap,
+  TrendingUp,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -74,25 +76,22 @@ export default function Home() {
   const warnTags = data?.tags.filter((t: SeoTag) => t.status === "warn") ?? [];
   const passTags = data?.tags.filter((t: SeoTag) => t.status === "pass") ?? [];
   const issues = [...failTags, ...warnTags];
+  const total = data?.tags.length ?? 0;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
 
       {/* ── Sticky header ── */}
-      <header className="sticky top-0 z-50 border-b border-border/50 bg-card/80 backdrop-blur-sm">
+      <header className="sticky top-0 z-50 border-b border-border/50 bg-card/80 backdrop-blur-md">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          {/* Single row on md+, stacked on mobile */}
           <div className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:gap-4 sm:py-3">
-
-            {/* Logo */}
-            <div className="flex items-center gap-2 shrink-0">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                <Activity className="h-4 w-4 text-primary" />
+            <div className="flex items-center gap-2.5 shrink-0">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 shadow-sm">
+                <Activity className="h-4 w-4 text-white" />
               </div>
               <span className="text-base font-bold tracking-tight">SEO Analyzer</span>
             </div>
 
-            {/* Search form — full-width on mobile */}
             <form onSubmit={handleSubmit} className="flex w-full flex-1 gap-2">
               <div className="relative flex-1 min-w-0">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
@@ -109,15 +108,18 @@ export default function Home() {
               <Button
                 type="submit"
                 disabled={isPending || !url.trim()}
-                className="h-10 shrink-0 px-4 sm:px-6"
+                className="h-10 shrink-0 px-4 sm:px-6 bg-gradient-to-r from-blue-500 to-violet-600 hover:from-blue-600 hover:to-violet-700 border-0 shadow-sm"
               >
                 {isPending ? (
                   <span className="flex items-center gap-2">
-                    <span className="h-4 w-4 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
+                    <span className="h-4 w-4 rounded-full border-2 border-white/60 border-t-white animate-spin" />
                     <span className="hidden sm:inline">Analyzing</span>
                   </span>
                 ) : (
-                  <span>Analyze</span>
+                  <span className="flex items-center gap-1.5">
+                    <Zap className="h-3.5 w-3.5" />
+                    <span>Analyze</span>
+                  </span>
                 )}
               </Button>
             </form>
@@ -136,15 +138,29 @@ export default function Home() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="flex flex-col items-center justify-center py-24 text-center sm:py-36"
+              className="flex flex-col items-center justify-center py-20 text-center sm:py-32"
             >
-              <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full border border-border/50 bg-muted/30">
-                <Globe className="h-9 w-9 text-muted-foreground/40" />
+              {/* Decorative gradient orbs */}
+              <div className="relative mb-8">
+                <div className="absolute -inset-8 rounded-full bg-blue-500/10 blur-2xl" />
+                <div className="absolute -inset-4 rounded-full bg-violet-500/10 blur-xl" />
+                <div className="relative flex h-24 w-24 items-center justify-center rounded-2xl border border-border/50 bg-gradient-to-br from-blue-500/10 to-violet-600/10 shadow-lg">
+                  <Globe className="h-11 w-11 text-blue-500/70" />
+                </div>
               </div>
-              <h2 className="mb-2 text-xl font-bold sm:text-2xl">Ready to audit</h2>
-              <p className="max-w-sm text-sm text-muted-foreground">
-                Enter any URL above to instantly analyze its meta tags, social previews, and SEO health.
+              <h2 className="mb-3 text-2xl font-bold sm:text-3xl">Audit any website instantly</h2>
+              <p className="max-w-sm text-sm text-muted-foreground leading-relaxed">
+                Enter any URL above to analyze meta tags, social previews, and SEO health — in seconds.
               </p>
+
+              {/* Feature chips */}
+              <div className="mt-6 flex flex-wrap justify-center gap-2">
+                {["Google Preview", "Open Graph", "Twitter Cards", "Technical SEO"].map((f) => (
+                  <span key={f} className="rounded-full border border-border/60 bg-muted/40 px-3 py-1 text-xs font-medium text-muted-foreground">
+                    {f}
+                  </span>
+                ))}
+              </div>
             </motion.div>
           )}
 
@@ -159,9 +175,10 @@ export default function Home() {
             >
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
                 {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="h-24 animate-pulse rounded-xl border border-border/40 bg-muted/20" />
+                  <div key={i} className="h-32 animate-pulse rounded-2xl border border-border/40 bg-muted/20" />
                 ))}
               </div>
+              <div className="h-6 w-48 animate-pulse rounded-full bg-muted/30" />
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="h-52 animate-pulse rounded-xl border border-border/40 bg-muted/20" />
@@ -181,7 +198,7 @@ export default function Home() {
               transition={{ duration: 0.25 }}
               className="space-y-8 sm:space-y-10"
             >
-              {/* Meta summary */}
+              {/* Meta summary row */}
               <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-muted-foreground">
                 <span className="font-mono text-xs text-foreground/70 truncate max-w-[240px] sm:max-w-none">
                   {data.url}
@@ -194,7 +211,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Score cards */}
+              {/* Score cards — circular rings */}
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
                 <ScoreCard title="Overall" score={data.score.overall} highlight />
                 <ScoreCard title="General" score={data.score.general} />
@@ -202,6 +219,11 @@ export default function Home() {
                 <ScoreCard title="Twitter" score={data.score.twitter} />
                 <ScoreCard title="Technical" score={data.score.technical} />
               </div>
+
+              {/* Visual distribution bar */}
+              {total > 0 && (
+                <DistributionBar pass={passTags.length} warn={warnTags.length} fail={failTags.length} total={total} />
+              )}
 
               {/* Preview row */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -266,7 +288,6 @@ export default function Home() {
                 />
 
                 <Tabs defaultValue="all">
-                  {/* Horizontally scrollable tabs on small screens */}
                   <ScrollArea className="w-full pb-0 mb-3">
                     <TabsList className="inline-flex h-9 w-auto gap-1 bg-muted/50 px-1 rounded-lg">
                       <TabsTrigger value="all" className="h-7 text-xs sm:text-sm px-2.5">
@@ -373,7 +394,6 @@ function IssueGroup({
 }) {
   return (
     <div className={`overflow-hidden rounded-xl border ${borderClass} ${bgClass}`}>
-      {/* Group header */}
       <div className={`flex items-center gap-2 border-b ${borderClass} px-4 py-2.5`}>
         {icon}
         <span className="text-sm font-semibold">{label}</span>
@@ -382,7 +402,6 @@ function IssueGroup({
         </span>
       </div>
 
-      {/* Tag rows */}
       <div className={`divide-y ${dividerClass}`}>
         {tags.map((tag, i) => (
           <div key={i} className="flex items-start gap-3 px-4 py-3">
@@ -421,6 +440,7 @@ function CountPill({ count }: { count: number }) {
   );
 }
 
+/* Circular SVG ring score card */
 function ScoreCard({ title, score, highlight }: { title: string; score: number; highlight?: boolean }) {
   const [current, setCurrent] = useState(0);
 
@@ -431,25 +451,114 @@ function ScoreCard({ title, score, highlight }: { title: string; score: number; 
   }, [score]);
 
   const color =
+    score >= 80 ? "#10b981" : score >= 50 ? "#f59e0b" : "#f43f5e";
+  const trackColor = "rgba(128,128,128,0.12)";
+
+  const size = highlight ? 88 : 72;
+  const strokeWidth = highlight ? 7 : 6;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (current / 100) * circumference;
+
+  const labelColor =
     score >= 80 ? "text-emerald-500" : score >= 50 ? "text-amber-500" : "text-rose-500";
-  const bar =
-    score >= 80 ? "bg-emerald-500" : score >= 50 ? "bg-amber-500" : "bg-rose-500";
 
   return (
-    <Card className={`relative overflow-hidden border-border/50 shadow-sm ${highlight ? "col-span-2 sm:col-span-1" : ""}`}>
+    <Card className={`relative overflow-hidden border-border/50 shadow-sm transition-shadow hover:shadow-md ${highlight ? "col-span-2 sm:col-span-1" : ""}`}>
       <CardContent className="flex flex-col items-center justify-center px-3 py-4 sm:px-4 sm:py-5">
-        <p className="mb-1 text-center text-[11px] font-medium uppercase tracking-wide text-muted-foreground sm:text-xs">
+        <p className="mb-2 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground sm:text-xs">
           {title}
         </p>
-        <span className={`font-mono font-bold tracking-tighter transition-all duration-700 ${color} ${highlight ? "text-4xl sm:text-5xl" : "text-2xl sm:text-3xl"}`}>
-          {Math.round(current)}
-        </span>
+        <div className="relative flex items-center justify-center">
+          <svg
+            width={size}
+            height={size}
+            style={{ transform: "rotate(-90deg)" }}
+          >
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              fill="none"
+              stroke={trackColor}
+              strokeWidth={strokeWidth}
+            />
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              fill="none"
+              stroke={color}
+              strokeWidth={strokeWidth}
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={offset}
+              style={{ transition: "stroke-dashoffset 1s ease-out" }}
+            />
+          </svg>
+          <span
+            className={`absolute font-mono font-bold tracking-tighter ${labelColor} ${highlight ? "text-2xl" : "text-lg"}`}
+          >
+            {Math.round(current)}
+          </span>
+        </div>
       </CardContent>
-      <div
-        className={`absolute bottom-0 left-0 h-[3px] ${bar} opacity-50 transition-[width] duration-1000 ease-out`}
-        style={{ width: `${current}%` }}
-      />
     </Card>
+  );
+}
+
+/* Stacked horizontal distribution bar */
+function DistributionBar({ pass, warn, fail, total }: { pass: number; warn: number; fail: number; total: number }) {
+  const pct = (n: number) => ((n / total) * 100).toFixed(1);
+
+  return (
+    <div className="rounded-xl border border-border/50 bg-card/60 px-5 py-4 shadow-sm">
+      <div className="mb-3 flex items-center gap-2">
+        <TrendingUp className="h-4 w-4 text-muted-foreground" />
+        <span className="text-sm font-semibold">Tag Health Overview</span>
+        <span className="ml-auto text-xs text-muted-foreground">{total} tags analyzed</span>
+      </div>
+
+      {/* Stacked bar */}
+      <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted/30">
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${pct(pass)}%` }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="bg-emerald-500"
+        />
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${pct(warn)}%` }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
+          className="bg-amber-400"
+        />
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${pct(fail)}%` }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          className="bg-rose-500"
+        />
+      </div>
+
+      {/* Legend */}
+      <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5">
+        <LegendItem color="bg-emerald-500" label="Passed" count={pass} pct={pct(pass)} />
+        <LegendItem color="bg-amber-400" label="Warnings" count={warn} pct={pct(warn)} />
+        <LegendItem color="bg-rose-500" label="Errors" count={fail} pct={pct(fail)} />
+      </div>
+    </div>
+  );
+}
+
+function LegendItem({ color, label, count, pct }: { color: string; label: string; count: number; pct: string }) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className={`h-2.5 w-2.5 rounded-full ${color} shrink-0`} />
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className="text-xs font-semibold">{count}</span>
+      <span className="text-[11px] text-muted-foreground/60">({pct}%)</span>
+    </div>
   );
 }
 
