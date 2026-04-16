@@ -140,15 +140,13 @@ export default function Home() {
               <span className="text-base font-bold tracking-tight">SEO Analyzer</span>
             </div>
             <form onSubmit={handleSubmit} className="flex w-full flex-1 gap-2">
-              <div className="relative flex-1 min-w-0 flex items-center">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none select-none">
-                  <Search className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-mono text-sm text-muted-foreground">https://</span>
-                </div>
-                <Input
+              <div className="flex flex-1 min-w-0 items-center h-10 rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+                <Search className="h-4 w-4 text-muted-foreground shrink-0 mr-2" />
+                <span className="font-mono text-sm text-muted-foreground select-none shrink-0">https://</span>
+                <input
                   type="text"
                   placeholder="example.com"
-                  className="pl-[6.75rem] h-10 font-mono text-sm w-full"
+                  className="flex-1 min-w-0 bg-transparent font-mono text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
                   value={domain}
                   onChange={(e) => setDomain(e.target.value)}
                   disabled={isPending}
