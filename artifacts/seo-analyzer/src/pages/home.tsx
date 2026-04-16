@@ -148,7 +148,7 @@ export default function Home() {
                 <Input
                   type="text"
                   placeholder="example.com"
-                  className="pl-[5.5rem] h-10 font-mono text-sm w-full"
+                  className="pl-[6.75rem] h-10 font-mono text-sm w-full"
                   value={domain}
                   onChange={(e) => setDomain(e.target.value)}
                   disabled={isPending}
