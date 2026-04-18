@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAnalyzeSeo } from "@workspace/api-client-react";
+import { useAnalyzeSeo } from "@/lib/api-client";
 import { useToast } from "@/hooks/use-toast";
 import {
   Search,
