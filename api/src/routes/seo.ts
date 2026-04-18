@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
 import { parse } from "node-html-parser";
-import { AnalyzeSeoBody, AnalyzeSeoResponse } from "@workspace/api-zod";
+import { z } from "zod";
+import { AnalyzeSeoBody, AnalyzeSeoResponse } from "../../../lib/api-zod/src/generated/api";
 
 const router: IRouter = Router();
 
